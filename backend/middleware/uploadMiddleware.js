@@ -4,7 +4,7 @@ const path = require("path");
 const jsteg = require("jsteg"); 
 const fs = require("fs");
 
-// Konfigurasi penyimpanan file
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/"); 
@@ -20,7 +20,7 @@ const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith("image")) {
         cb(null, true);
     } else {
-        cb(new Error("File harus berupa gambar"), false);
+        cb(new Error("File must be Picture"), false);
     }
 };
 
@@ -45,9 +45,9 @@ const checkForSteganography = (req, res, next) => {
         if (hiddenData) {
         
             fs.unlink(filePath, (err) => {
-                if (err) console.error("Gagal menghapus file:", err);
+                if (err) console.error("Failed Delete File:", err);
             });
-            return res.status(400).json({ message: "File mengandung steganografi. Upload ditolak." });
+            return res.status(400).json({ message: "File with steganografi. Upload denied." });
         }
 
        
