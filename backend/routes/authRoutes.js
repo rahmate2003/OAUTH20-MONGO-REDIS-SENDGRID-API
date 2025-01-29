@@ -1,30 +1,13 @@
-//routes/authRoutes.js
+// routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const authGoogleController = require("../controllers/authGoogleController");
-const otpMiddleware = require("../middleware/otpMiddleware");
-const { validateRegistration, validateLogin, handleValidationErrors } = require("../middleware/validationMiddleware");
+const { validateRegistration, validateLogin, validateRefreshToken } = require("../middleware/validationMiddleware");
 
-
-router.post("/request-otp", authController.requestOTP);
-
-
-router.post("/verify-otp", otpMiddleware, authController.verifyOTPController);
-
-
-router.get("/google", authGoogleController.initiateGoogleLogin);
-
-
-router.get("/google/callback", authGoogleController.handleGoogleCallback);
-
-
-router.post("/register", validateRegistration, handleValidationErrors, authController.registerUser);
-
-
-router.post("/login", validateLogin, handleValidationErrors, authController.loginUser);
-
-
-router.post("/refresh-token", authController.refreshToken);
+router.post("/register", validateRegistration, authController.register);
+router.post("/register/verify", authController.verifyRegister);
+router.post("/login", validateLogin, authController.login);
+router.post("/login/verify", authController.verifyLogin );
+router.post("/refresh-token", validateRefreshToken, authController.refreshToken );
 
 module.exports = router;
