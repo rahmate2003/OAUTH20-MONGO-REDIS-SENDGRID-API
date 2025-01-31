@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const redisClient = require("../config/redis");
 const { generateOTP, sendOTPEmail } = require("../utils/otp");
 const { generateRefreshToken, saveRefreshToken, verifyRefreshToken, revokeRefreshToken } = require("../config/refreshToken");
+
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -22,7 +23,7 @@ const register = async (req, res) => {
       email: email.toLowerCase(),
       password: hashedPassword,
     };
-    const tempToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '10m' });
+    const tempToken = jwt.sign({ email }, process.env.JWT_OTP_SECRET, { expiresIn: '10m' });
     await redisClient.setEx(`reg:${tempToken}`, 600, JSON.stringify(registrationData));
     await redisClient.setEx(`otp:${tempToken}`, 600, otp);
     await sendOTPEmail(email, otp, type);
@@ -41,6 +42,7 @@ const register = async (req, res) => {
     });
   }
 };
+
 const verifyRegister = async (req, res) => {
   try {
     const { token, type, otp } = req.body;
@@ -100,9 +102,11 @@ const login = async (req, res) => {
       });
     }
     const otp = generateOTP();
-    const tempToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '10m' });
+    console.log("Generated OTP:", otp); 
+    const tempToken = jwt.sign({ userId: user._id }, process.env.JWT_OTP_SECRET, { expiresIn: '10m' });
     await redisClient.setEx(`otp:${tempToken}`, 600, otp);
-    await sendOTPEmail(user.email, otp);
+    console.log("OTP stored in Redis:", otp); 
+    await sendOTPEmail(user.email, otp, type);
     res.status(200).json({ 
       success: true,
       message: "Login initiated. Please verify OTP.",
@@ -134,13 +138,14 @@ const verifyLogin = async (req, res) => {
         message: "Verification expired" 
       });
     }
+
     if (storedOTP !== otp) {
       return res.status(400).json({ 
         success: false,
         message: "Invalid OTP" 
       });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_OTP_SECRET);
     const accessToken = jwt.sign(
       { userId: decoded.userId },
       process.env.JWT_SECRET,
