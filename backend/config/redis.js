@@ -1,14 +1,12 @@
 // config/redis.js
-const redis = require("redis");
+const { createClient } = require("redis");
 require("dotenv").config();
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
-
-const redisClient = redis.createClient({
-  url: REDIS_URL,
+const redisClient = createClient({
+  url: process.env.REDIS_URL,
   socket: {
     reconnectStrategy: (retries) => {
-      if (retries > 5) { // Limit retries to 5 attempts
+      if (retries > 5) { 
         console.error("Redis: Failed to connect after 5 attempts. Stopping retries.");
         return false;
       }
