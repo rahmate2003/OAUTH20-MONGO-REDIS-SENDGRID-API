@@ -1,12 +1,15 @@
 # API Documentation
 
-This API provides user authentication functionality, including registration, login, and Google OAuth2 authentication. The following technologies are used:
+This API provides user authentication functionality, including registration, login, and Google OAuth2 authentication.
+
+## Technologies Used
 
 - **OAuth2** for Google authentication
 - **JWT (JSON Web Tokens)** for token-based authentication
 - **bcrypt** for hashing passwords
 - **Redis** for OTP and token storage
 - **MongoDB** for user data storage
+- **Sendgrid** for Email OTP SMTP
 - **Passport** for handling Google OAuth2 and JWT authentication
 
 ## Routes
@@ -130,17 +133,6 @@ This API provides user authentication functionality, including registration, log
 
 - **authMiddleware**: Ensures the user is authenticated by verifying the JWT.
 - **roleMiddleware**: Checks the user's role before allowing access to certain routes.
-
-## Technologies Used
-
-- **Node.js**
-- **Express**
-- **MongoDB**
-- **Redis**
-- **Passport.js** (for Google OAuth2)
-- **JWT (JSON Web Tokens)**
-- **bcryptjs**
-- **dotenv** (for environment variables)
 
 ## Installation
 
